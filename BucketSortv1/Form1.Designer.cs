@@ -30,6 +30,7 @@
         {
             btnBucketSort = new Button();
             txtOrder = new TextBox();
+            lstvOrder = new ListView();
             SuspendLayout();
             // 
             // btnBucketSort
@@ -54,11 +55,20 @@
             txtOrder.Size = new Size(271, 209);
             txtOrder.TabIndex = 1;
             // 
+            // lstvOrder
+            // 
+            lstvOrder.Location = new Point(506, 57);
+            lstvOrder.Name = "lstvOrder";
+            lstvOrder.Size = new Size(315, 226);
+            lstvOrder.TabIndex = 2;
+            lstvOrder.UseCompatibleStateImageBehavior = false;
+            // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(585, 339);
+            ClientSize = new Size(862, 339);
+            Controls.Add(lstvOrder);
             Controls.Add(txtOrder);
             Controls.Add(btnBucketSort);
             Name = "Form1";
@@ -71,5 +81,6 @@
 
         private Button btnBucketSort;
         private TextBox txtOrder;
+        private ListView lstvOrder;
     }
 }
