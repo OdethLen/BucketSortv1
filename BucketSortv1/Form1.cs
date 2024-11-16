@@ -1,5 +1,6 @@
 using System;
-using System.Security.Policy;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+
 namespace BucketSortv1
 {
     public partial class Form1 : Form
@@ -23,26 +24,28 @@ namespace BucketSortv1
 
             txtOrder.Text = string.Join(", ", numbers);
             BucketSort();
-
+           
         }
 
         public void BucketSort()
         {
-
+            //Creación de los arreglos 
             int bucketCount = 5;
             int bucketSize = 5;
             int[][] buckets = new int[bucketCount][];
+
             for (int i = 0; i < bucketCount; i++)
             {
                 buckets[i] = new int[bucketSize];
             }
+            //Distribución de números en la cubeta 
 
             for (int i = 0; i < numbers.Length; i++)
             {
                 int bucketIndex = (numbers[i] - 1) / (100 / bucketCount);
                 for (int j = 0; j < bucketSize; j++)
                 {
-                    if (buckets[bucketIndex][j] == 0)
+                    if (buckets[bucketIndex][j] == 0) //Verifica si hay un espacio vacio en la cubeta
                     {
                         buckets[bucketIndex][j] = numbers[i];
                         break;
@@ -72,7 +75,11 @@ namespace BucketSortv1
                 for (int j = 1; j < bucketSize; j++)
                 {
                     int current = buckets[i][j];
-                    if (current == 0) break; // Ignorar elementos vacíos (0s)
+                    if (current == 0)
+                    {
+                        break;
+                    }
+                    // Ignorar elementos vacíos (0s)
                     int k = j - 1;
 
                     // Insertion Sort dentro del bucket
@@ -107,6 +114,7 @@ namespace BucketSortv1
 
         }
 
+      
     }
 }
 
