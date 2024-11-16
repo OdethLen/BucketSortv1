@@ -1,6 +1,4 @@
 using System;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
 namespace BucketSortv1
 {
     public partial class Form1 : Form
@@ -13,6 +11,22 @@ namespace BucketSortv1
             InitializeComponent();
             random = new Random();
             numbers = new int[10];
+
+            // Configuración del ListView lstvOrder
+            lstvOrder.View = View.Details;
+            for (int i = 0; i <= 4; i++)
+            {
+                lstvOrder.Columns.Add("" + i, 60);
+            }
+
+            // Configuración del ListView lstvBucket
+            lstvBucket.View = View.Details;
+            lstvBucket.Columns.Add("Bucket", 80);
+            lstvBucket.Columns.Add("Rango", 80);
+            lstvBucket.Columns.Add("Números en Bucket", 150);
+
+
+
         }
 
         private void btnBucketSort_Click(object sender, EventArgs e)
@@ -22,30 +36,29 @@ namespace BucketSortv1
                 numbers[i] = random.Next(1, 100);
             }
 
-            txtOrder.Text = string.Join(", ", numbers);
+            txtOrder.Text = string.Join(" , ", numbers);
             BucketSort();
-           
+
         }
 
         public void BucketSort()
         {
-            //Creación de los arreglos 
             int bucketCount = 5;
             int bucketSize = 5;
             int[][] buckets = new int[bucketCount][];
-
             for (int i = 0; i < bucketCount; i++)
             {
                 buckets[i] = new int[bucketSize];
             }
-            //Distribución de números en la cubeta 
 
+            // Distribuir números en los buckets
+            lstvBucket.Items.Clear();
             for (int i = 0; i < numbers.Length; i++)
             {
                 int bucketIndex = (numbers[i] - 1) / (100 / bucketCount);
                 for (int j = 0; j < bucketSize; j++)
                 {
-                    if (buckets[bucketIndex][j] == 0) //Verifica si hay un espacio vacio en la cubeta
+                    if (buckets[bucketIndex][j] == 0) // Espacio vacío
                     {
                         buckets[bucketIndex][j] = numbers[i];
                         break;
@@ -53,48 +66,47 @@ namespace BucketSortv1
                 }
             }
 
-            txtOrder.AppendText("\nBuckets: ");
+            // Mostrar los buckets en lstvBucket
             for (int i = 0; i < bucketCount; i++)
             {
-                txtOrder.AppendText("Bucket " + (i + 1) + " (" + (i * (100 / bucketCount) + 1) + " - " + ((i + 1) * (100 / bucketCount)) + "): ");
-                for (int j = 0; j < bucketSize; j++)
-                {
-                    if (buckets[i][j] != 0)
-                    {
-                        txtOrder.AppendText(buckets[i][j] + (j < bucketSize - 1 && buckets[i][j + 1] != 0 ? ", " : ""));
-                    }
-                }
-                txtOrder.AppendText(Environment.NewLine);
+                string range = (i * (100 / bucketCount) + 1) + " - " + ((i + 1) * (100 / bucketCount));
+                string bucketNumbers = string.Join(", ", buckets[i].Where(x => x != 0));
+                ListViewItem bucketItem = new ListViewItem((i + 1).ToString());
+                bucketItem.SubItems.Add(range);
+                bucketItem.SubItems.Add(bucketNumbers);
+                lstvBucket.Items.Add(bucketItem);
             }
 
-            txtOrder.AppendText("\nSorting each bucket:\n");
+            // Ordenar cada bucket y mostrar los pasos
+            lstvOrder.Items.Clear();
             for (int i = 0; i < bucketCount; i++)
             {
-                txtOrder.AppendText("\nBucket " + (i + 1) + " (ordenado): ");
+                // Mostrar el estado original del bucket
+                AddOriginalBucketState(buckets[i]);
 
                 for (int j = 1; j < bucketSize; j++)
                 {
                     int current = buckets[i][j];
-                    if (current == 0)
-                    {
-                        break;
-                    }
-                    // Ignorar elementos vacíos (0s)
-                    int k = j - 1;
+                    if (current == 0) break;
 
-                    // Insertion Sort dentro del bucket
+                    int k = j - 1;
                     while (k >= 0 && buckets[i][k] > current)
                     {
+                        // Mover el número hacia adelante
                         buckets[i][k + 1] = buckets[i][k];
-                        txtOrder.AppendText(string.Join(", ", buckets[i]) + Environment.NewLine); // Imprimir estado actual
+
+                        // Mostrar el estado actual del bucket
+                        AddStepToOrder(buckets[i]);
                         k--;
                     }
                     buckets[i][k + 1] = current;
-                    txtOrder.AppendText(string.Join(", ", buckets[i]) + Environment.NewLine); // Imprimir estado después de insertar
+
+                    // Mostrar el estado después de insertar
+                    AddStepToOrder(buckets[i]);
                 }
             }
 
-            // Copiar elementos de los buckets de vuelta al arreglo principal
+            // Copiar elementos de los buckets al arreglo principal
             int index = 0;
             for (int i = 0; i < bucketCount; i++)
             {
@@ -107,14 +119,53 @@ namespace BucketSortv1
                 }
             }
 
-            // Imprimir el arreglo final ordenado
-            txtOrder.AppendText("\nFinal order: ");
-            txtOrder.AppendText(string.Join(", ", numbers));
-
-
+            // Mostrar el arreglo final ordenado
+            txtOrder.AppendText("\nFinal order: " + string.Join(", ", numbers));
         }
 
-      
+        private void AddOriginalBucketState(int[] bucket)
+        {
+            // Crear un ListViewItem para mostrar el estado original del bucket
+            ListViewItem originalItem = new ListViewItem("Original");
+
+            for (int i = 0; i < bucket.Length; i++)
+            {
+                string value = bucket[i] == 0 ? "" : bucket[i].ToString();
+                if (i == 0)
+                {
+                    originalItem.Text = value;
+                }
+                else
+                {
+                    originalItem.SubItems.Add(value);
+                }
+            }
+
+            lstvOrder.Items.Add(originalItem);
+        }
+
+        private void AddStepToOrder(int[] bucket)
+        {
+            // Crear un ListViewItem para mostrar el estado actual
+            ListViewItem stepItem = new ListViewItem();
+
+            for (int i = 0; i < bucket.Length; i++)
+            {
+                string value = bucket[i] == 0 ? "" : bucket[i].ToString();
+                if (i == 0)
+                {
+                    stepItem.Text = value;
+                }
+                else
+                {
+                    stepItem.SubItems.Add(value);
+                }
+            }
+
+            lstvOrder.Items.Add(stepItem);
+        }
+
+        
     }
 }
 
