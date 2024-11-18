@@ -22,8 +22,8 @@ namespace BucketSortv1
             // Configuración del ListView lstvBucket
             lstvBucket.View = View.Details;
             lstvBucket.Columns.Add("Bucket", 80);
-            lstvBucket.Columns.Add("Rango", 80);
-            lstvBucket.Columns.Add("Números en Bucket", 150);
+            lstvBucket.Columns.Add("Range", 80);
+            lstvBucket.Columns.Add("Bucket numbers", 150);
 
 
 
@@ -46,6 +46,7 @@ namespace BucketSortv1
             int bucketCount = 5;
             int bucketSize = 5;
             int[][] buckets = new int[bucketCount][];
+
             for (int i = 0; i < bucketCount; i++)
             {
                 buckets[i] = new int[bucketSize];
@@ -58,10 +59,10 @@ namespace BucketSortv1
                 int bucketIndex = (numbers[i] - 1) / (100 / bucketCount);
                 for (int j = 0; j < bucketSize; j++)
                 {
-                    if (buckets[bucketIndex][j] == 0) // Espacio vacío
+                    if (buckets[bucketIndex][j] == 0) 
                     {
                         buckets[bucketIndex][j] = numbers[i];
-                        break;
+                        break;  
                     }
                 }
             }
@@ -87,7 +88,10 @@ namespace BucketSortv1
                 for (int j = 1; j < bucketSize; j++)
                 {
                     int current = buckets[i][j];
-                    if (current == 0) break;
+                    if (current == 0)
+                    {
+                        break;
+                    }
 
                     int k = j - 1;
                     while (k >= 0 && buckets[i][k] > current)
